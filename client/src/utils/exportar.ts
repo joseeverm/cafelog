@@ -5,6 +5,80 @@ import type { Compra, Configuracion, TipoCafe } from '../types'
 import { kilosSecos, totalPagadoCompra, getSemanaISO, resumenSemana } from './calculos'
 import { formatPeso, formatNumero, formatFecha } from './formato'
 
+export interface FilaExcel {
+  fecha: string
+  agricultor: string
+  tipoCafeNombre: string
+  estado: 'humedo' | 'seco'
+  kilos: number
+  precioPorKilo: number
+  costosAdicionales: number
+  notas: string
+}
+
+const MESES_ES: Record<string, string> = {
+  'ene': '01', 'feb': '02', 'mar': '03', 'abr': '04',
+  'may': '05', 'jun': '06', 'jul': '07', 'ago': '08',
+  'sep': '09', 'oct': '10', 'nov': '11', 'dic': '12',
+}
+
+function parseFechaES(str: string): string {
+  const m = String(str).trim().match(/^(\d{1,2})\s+(\w+)\.?\s+(\d{4})$/)
+  if (!m) throw new Error(`Fecha no reconocida: "${str}"`)
+  const [, dia, mes, año] = m
+  const mesNum = MESES_ES[mes.toLowerCase()]
+  if (!mesNum) throw new Error(`Mes desconocido: "${mes}"`)
+  return `${año}-${mesNum}-${dia.padStart(2, '0')}`
+}
+
+export async function parsearExcelImport(file: File): Promise<FilaExcel[]> {
+  const buffer = await file.arrayBuffer()
+  const wb = XLSX.read(buffer, { type: 'array' })
+  const ws = wb.Sheets[wb.SheetNames[0]]
+  const rows = XLSX.utils.sheet_to_json<Record<string, unknown>>(ws, { raw: true })
+
+  if (rows.length === 0) throw new Error('El archivo está vacío')
+
+  const texto = (row: Record<string, unknown>, key: string) =>
+    String(row[key] ?? '').trim()
+
+  const numero = (row: Record<string, unknown>, key: string): number => {
+    const v = row[key]
+    const n = typeof v === 'number' ? v : parseFloat(String(v ?? '0').replace(/\./g, '').replace(',', '.'))
+    return isNaN(n) ? 0 : n
+  }
+
+  const filas: FilaExcel[] = []
+  for (let i = 0; i < rows.length; i++) {
+    const row = rows[i]
+    const agricultor = texto(row, 'Agricultor')
+    const kilos = numero(row, 'Kilos Comprados')
+    if (!agricultor || kilos <= 0) continue
+
+    let fecha: string
+    try {
+      fecha = parseFechaES(texto(row, 'Fecha'))
+    } catch (e) {
+      throw new Error(`Fila ${i + 2}: ${(e as Error).message}`)
+    }
+
+    const estadoRaw = texto(row, 'Estado').toLowerCase()
+    filas.push({
+      fecha,
+      agricultor,
+      tipoCafeNombre: texto(row, 'Tipo de Café'),
+      estado: estadoRaw.startsWith('sec') ? 'seco' : 'humedo',
+      kilos,
+      precioPorKilo: numero(row, 'Precio/Kg'),
+      costosAdicionales: numero(row, 'Costos Adicionales'),
+      notas: texto(row, 'Notas'),
+    })
+  }
+
+  if (filas.length === 0) throw new Error('No se encontraron filas válidas en el archivo')
+  return filas
+}
+
 function getTipoCafe(tipoId: string, tipos: TipoCafe[]): string {
   return tipos.find(t => t.id === tipoId)?.nombre ?? 'Desconocido'
 }

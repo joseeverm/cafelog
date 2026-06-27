@@ -7,6 +7,8 @@ import {
   apiCrearTipoCafe, apiEditarTipoCafe, apiEliminarTipoCafe,
   apiImportar,
 } from '../api/client'
+import type { FilaExcel } from '../utils/exportar'
+import { generarId } from '../utils/formato'
 
 interface AppContextType {
   compras: Compra[]
@@ -28,6 +30,7 @@ interface AppContextType {
   eliminarTipoCafe: (id: string) => Promise<void>
 
   migrarDesdeLocalStorage: () => Promise<{ tiposCafe: number; lotes: number; compras: number }>
+  importarComprasDesdeExcel: (filas: FilaExcel[]) => Promise<{ importadas: number; tiposCreados: number }>
 }
 
 const CONFIG_VACIA: Configuracion = {
@@ -169,6 +172,46 @@ export function AppProvider({ children }: { children: ReactNode }) {
     setConfigState(prev => ({ ...prev, tiposCafe: prev.tiposCafe.filter(t => t.id !== id) }))
   }
 
+  // ── Importar desde Excel ───────────────────────────────────────────────────
+
+  async function importarComprasDesdeExcel(filas: FilaExcel[]) {
+    // Build tipo map: nombre (lowercase) → id
+    const tipoMap = new Map(config.tiposCafe.map(t => [t.nombre.toLowerCase(), t.id]))
+    let tiposCreados = 0
+
+    // Create missing tipos
+    const nombresNecesarios = [...new Set(filas.map(f => f.tipoCafeNombre).filter(Boolean))]
+    for (const nombre of nombresNecesarios) {
+      if (!tipoMap.has(nombre.toLowerCase())) {
+        const nuevo = await apiCrearTipoCafe({ nombre, color: '#b8833a' })
+        tipoMap.set(nombre.toLowerCase(), nuevo.id)
+        setConfigState(prev => ({ ...prev, tiposCafe: [...prev.tiposCafe, nuevo] }))
+        tiposCreados++
+      }
+    }
+
+    // Create compras sequentially
+    for (const fila of filas) {
+      const tipoCafeId = tipoMap.get(fila.tipoCafeNombre.toLowerCase()) ?? config.tiposCafe[0]?.id ?? ''
+      const costosAdicionales: CostoAdicional[] = fila.costosAdicionales > 0
+        ? [{ id: generarId(), descripcion: 'Costos importados', monto: fila.costosAdicionales }]
+        : []
+      const nueva = await apiCrearCompra({
+        fecha: fila.fecha,
+        agricultor: fila.agricultor,
+        tipoCafeId,
+        estado: fila.estado,
+        kilos: fila.kilos,
+        precioPorKilo: fila.precioPorKilo,
+        costosAdicionales,
+        notas: fila.notas,
+      })
+      setCompras(prev => [nueva, ...prev])
+    }
+
+    return { importadas: filas.length, tiposCreados }
+  }
+
   // ── Migración desde localStorage ───────────────────────────────────────────
 
   async function migrarDesdeLocalStorage() {
@@ -198,7 +241,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
       agregarCompra, editarCompra, eliminarCompra,
       agregarLote, editarLote, eliminarLote,
       setConfig, agregarTipoCafe, editarTipoCafe, eliminarTipoCafe,
-      migrarDesdeLocalStorage,
+      migrarDesdeLocalStorage, importarComprasDesdeExcel,
     }}>
       {children}
     </AppContext.Provider>

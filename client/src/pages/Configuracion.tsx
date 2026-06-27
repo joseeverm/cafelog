@@ -1,5 +1,5 @@
-import { useState } from 'react'
-import { Sun, Moon, Gamepad2, Check, X, LogOut, Download } from 'lucide-react'
+import { useState, useRef } from 'react'
+import { Sun, Moon, Gamepad2, Check, X, LogOut, Download, Upload } from 'lucide-react'
 import InputMoneda from '../components/InputMoneda'
 import { useApp } from '../context/AppContext'
 import { useAuth } from '../context/AuthContext'
@@ -7,6 +7,7 @@ import { useThemeCtx } from '../context/ThemeContext'
 import type { Theme } from '../hooks/useTheme'
 import type { TipoCafe, CostoAdicional, Configuracion } from '../types'
 import { generarId } from '../utils/formato'
+import { parsearExcelImport } from '../utils/exportar'
 import PageHeader from '../components/PageHeader'
 import Boton from '../components/Boton'
 
@@ -56,8 +57,10 @@ const TEMAS: {
   },
 ]
 
+type ImportEstado = { tipo: 'idle' } | { tipo: 'procesando' } | { tipo: 'ok'; importadas: number; tiposCreados: number } | { tipo: 'error'; mensaje: string }
+
 export default function Configuracion() {
-  const { config, setConfig, agregarTipoCafe, editarTipoCafe, eliminarTipoCafe, migrarDesdeLocalStorage } = useApp()
+  const { config, setConfig, agregarTipoCafe, editarTipoCafe, eliminarTipoCafe, migrarDesdeLocalStorage, importarComprasDesdeExcel } = useApp()
   const { logout } = useAuth()
   const { theme, setTheme } = useThemeCtx()
   const [editandoTipo, setEditandoTipo] = useState<TipoCafe | null>(null)
@@ -66,6 +69,8 @@ export default function Configuracion() {
   const [nuevoCosto, setNuevoCosto] = useState({ descripcion: '', monto: '' })
   const [migrando, setMigrando] = useState(false)
   const [migrado, setMigrado] = useState(localStorage.getItem('cafelog_migrated') === '1')
+  const [importEstado, setImportEstado] = useState<ImportEstado>({ tipo: 'idle' })
+  const fileInputRef = useRef<HTMLInputElement>(null)
 
   function actualizarConfig(parcial: Partial<Configuracion>) {
     void setConfig({ ...config, ...parcial })
@@ -98,6 +103,20 @@ export default function Configuracion() {
       alert(`Error al migrar: ${(err as Error).message}`)
     } finally {
       setMigrando(false)
+    }
+  }
+
+  async function handleImportar(e: React.ChangeEvent<HTMLInputElement>) {
+    const file = e.target.files?.[0]
+    if (!file) return
+    e.target.value = ''
+    setImportEstado({ tipo: 'procesando' })
+    try {
+      const filas = await parsearExcelImport(file)
+      const resultado = await importarComprasDesdeExcel(filas)
+      setImportEstado({ tipo: 'ok', importadas: resultado.importadas, tiposCreados: resultado.tiposCreados })
+    } catch (err) {
+      setImportEstado({ tipo: 'error', mensaje: (err as Error).message })
     }
   }
 
@@ -346,6 +365,47 @@ export default function Configuracion() {
                 </Boton>
               </div>
             </div>
+          </div>
+        </div>
+
+        {/* Importar desde Excel */}
+        <div className={sectionCls}>
+          <SectionHeader>Importar datos</SectionHeader>
+          <div className="p-5 space-y-3">
+            <p className="text-xs text-zinc-500 dark:text-zinc-400">
+              Importa compras desde un archivo Excel exportado por CaféLog. Los tipos de café que no existan se crearán automáticamente.
+            </p>
+            <input
+              ref={fileInputRef}
+              type="file"
+              accept=".xlsx"
+              className="hidden"
+              onChange={e => void handleImportar(e)}
+            />
+            <Boton
+              variante="secundario"
+              tamaño="sm"
+              onClick={() => fileInputRef.current?.click()}
+              disabled={importEstado.tipo === 'procesando'}
+            >
+              <Upload className="w-3.5 h-3.5" />
+              {importEstado.tipo === 'procesando' ? 'Importando…' : 'Seleccionar archivo .xlsx'}
+            </Boton>
+            {importEstado.tipo === 'ok' && (
+              <div className="flex items-start gap-2 bg-emerald-50 dark:bg-emerald-500/10 border border-emerald-200 dark:border-emerald-500/30 rounded-lg px-3 py-2.5">
+                <Check className="w-4 h-4 text-emerald-600 dark:text-emerald-400 mt-0.5 shrink-0" />
+                <p className="text-xs text-emerald-800 dark:text-emerald-300">
+                  {importEstado.importadas} compra{importEstado.importadas !== 1 ? 's' : ''} importada{importEstado.importadas !== 1 ? 's' : ''}
+                  {importEstado.tiposCreados > 0 && ` · ${importEstado.tiposCreados} tipo${importEstado.tiposCreados !== 1 ? 's' : ''} de café creado${importEstado.tiposCreados !== 1 ? 's' : ''}`}
+                </p>
+              </div>
+            )}
+            {importEstado.tipo === 'error' && (
+              <div className="flex items-start gap-2 bg-red-50 dark:bg-red-500/10 border border-red-200 dark:border-red-500/30 rounded-lg px-3 py-2.5">
+                <X className="w-4 h-4 text-red-500 dark:text-red-400 mt-0.5 shrink-0" />
+                <p className="text-xs text-red-700 dark:text-red-300">{importEstado.mensaje}</p>
+              </div>
+            )}
           </div>
         </div>
 
