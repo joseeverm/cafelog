@@ -11,7 +11,7 @@ export const compraInputSchema = z.object({
   fecha: z.string().regex(/^\d{4}-\d{2}-\d{2}$/, 'Formato de fecha inválido (YYYY-MM-DD)'),
   agricultor: z.string().min(1),
   tipoCafeId: z.string().min(1),
-  estado: z.enum(['humedo', 'seco']),
+  estado: z.enum(['humedo', 'seco', 'pasilla']),
   kilos: z.number().positive(),
   precioPorKilo: z.number().int().nonnegative(),
   costosAdicionales: z.array(costoAdicionalSchema).default([]),

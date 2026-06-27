@@ -10,6 +10,7 @@ datasource db {
 enum EstadoCafe {
   humedo
   seco
+  pasilla
 }
 
 enum EstadoLote {

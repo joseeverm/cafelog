@@ -25,5 +25,5 @@ export interface CostoAdicional {
   monto: number
 }
 
-export type EstadoCafe = 'humedo' | 'seco'
+export type EstadoCafe = 'humedo' | 'seco' | 'pasilla'
 export type EstadoLote = 'abierto' | 'vendido'

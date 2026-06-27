@@ -1,8 +1,8 @@
-import type { Compra, Lote, Configuracion, ResumenSemana } from '../types'
+import type { Compra, Lote, Configuracion, ResumenSemana, EstadoCafe } from '../types'
 
-export function kilosSecos(kilos: number, estado: 'humedo' | 'seco', porcentajePerdida: number): number {
-  if (estado === 'seco') return kilos
-  return kilos * (1 - porcentajePerdida / 100)
+export function kilosSecos(kilos: number, estado: EstadoCafe, porcentajePerdida: number): number {
+  if (estado === 'humedo') return kilos * (1 - porcentajePerdida / 100)
+  return kilos
 }
 
 export function totalCostosAdicionales(compra: Compra): number {

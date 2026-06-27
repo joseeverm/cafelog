@@ -1,5 +1,5 @@
 interface Props {
-  estado: 'humedo' | 'seco' | 'abierto' | 'vendido'
+  estado: 'humedo' | 'seco' | 'pasilla' | 'abierto' | 'vendido'
 }
 
 const config = {
@@ -10,6 +10,10 @@ const config = {
   seco: {
     label: 'Seco',
     clase: 'bg-amber-100 text-amber-700 dark:bg-amber-500/15 dark:text-amber-400',
+  },
+  pasilla: {
+    label: 'Pasilla',
+    clase: 'bg-orange-100 text-orange-700 dark:bg-orange-500/15 dark:text-orange-400',
   },
   abierto: {
     label: 'Abierto',

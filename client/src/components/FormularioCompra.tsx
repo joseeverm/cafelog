@@ -1,7 +1,7 @@
-import { useState } from 'react'
-import { Droplets, Sun, ChevronDown, ChevronRight, X, Plus } from 'lucide-react'
+import { useState, useEffect } from 'react'
+import { Droplets, Sun, Layers, ChevronDown, ChevronRight, X, Plus } from 'lucide-react'
 import { useApp } from '../context/AppContext'
-import type { Compra, CostoAdicional } from '../types'
+import type { Compra, CostoAdicional, EstadoCafe } from '../types'
 import { kilosSecos } from '../utils/calculos'
 import { formatPeso, formatNumero, hoy, generarId } from '../utils/formato'
 import Boton from './Boton'
@@ -32,13 +32,20 @@ export default function FormularioCompra({ compraInicial, onGuardar, onGuardarNu
   const [fecha, setFecha] = useState(compraInicial?.fecha ?? hoy())
   const [agricultor, setAgricultor] = useState(compraInicial?.agricultor ?? '')
   const [tipoCafeId, setTipoCafeId] = useState(compraInicial?.tipoCafeId ?? config.tiposCafe[0]?.id ?? '')
-  const [estado, setEstado] = useState<'humedo' | 'seco'>(compraInicial?.estado ?? 'humedo')
+  const [estado, setEstado] = useState<EstadoCafe>(compraInicial?.estado ?? 'humedo')
   const [kilos, setKilos] = useState(compraInicial?.kilos?.toString() ?? '')
   const [precio, setPrecio] = useState(compraInicial?.precioPorKilo?.toString() ?? '')
   const [costos, setCostos] = useState<CostoAdicional[]>(compraInicial?.costosAdicionales ?? [])
   const [notas, setNotas] = useState(compraInicial?.notas ?? '')
   const [loteId, setLoteId] = useState(compraInicial?.loteId ?? '')
   const [expandirCostos, setExpandirCostos] = useState(costos.length > 0)
+
+  useEffect(() => {
+    const tipo = config.tiposCafe.find(t => t.id === tipoCafeId)
+    if (tipo?.nombre.toLowerCase() === 'pasilla') {
+      setEstado('pasilla')
+    }
+  }, [tipoCafeId, config.tiposCafe])
 
   const lotesAbiertos = lotes.filter(l => l.estado === 'abierto')
   const kilosNum = parseFloat(kilos) || 0
@@ -157,6 +164,18 @@ export default function FormularioCompra({ compraInicial, onGuardar, onGuardarNu
             <Sun className="w-4 h-4" />
             Seco
           </button>
+          <button
+            type="button"
+            onClick={() => setEstado('pasilla')}
+            className={`flex-1 flex items-center justify-center gap-2 py-2 rounded-lg text-sm font-medium border transition-all ${
+              estado === 'pasilla'
+                ? 'bg-orange-50 border-orange-400 text-orange-700 dark:bg-orange-500/10 dark:border-orange-500 dark:text-orange-400'
+                : 'bg-white dark:bg-zinc-800 border-zinc-200 dark:border-zinc-700 text-zinc-500 dark:text-zinc-400 hover:border-zinc-300 dark:hover:border-zinc-600'
+            }`}
+          >
+            <Layers className="w-4 h-4" />
+            Pasilla
+          </button>
         </div>
       </div>
 
@@ -198,6 +217,11 @@ export default function FormularioCompra({ compraInicial, onGuardar, onGuardarNu
               {estado === 'humedo' && (
                 <p className="text-xs text-zinc-400 dark:text-zinc-500">
                   ({config.porcentajePerdidaSecado}% pérdida)
+                </p>
+              )}
+              {estado === 'pasilla' && (
+                <p className="text-xs text-zinc-400 dark:text-zinc-500">
+                  (sin pérdida por secado)
                 </p>
               )}
             </div>

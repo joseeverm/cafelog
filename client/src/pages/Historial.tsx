@@ -125,6 +125,7 @@ export default function Historial() {
             <option value="">Todos los estados</option>
             <option value="humedo">Húmedo</option>
             <option value="seco">Seco</option>
+            <option value="pasilla">Pasilla</option>
           </select>
           {hayFiltros && (
             <button

@@ -9,7 +9,7 @@ export interface FilaExcel {
   fecha: string
   agricultor: string
   tipoCafeNombre: string
-  estado: 'humedo' | 'seco'
+  estado: 'humedo' | 'seco' | 'pasilla'
   kilos: number
   precioPorKilo: number
   costosAdicionales: number
@@ -67,7 +67,7 @@ export async function parsearExcelImport(file: File): Promise<FilaExcel[]> {
       fecha,
       agricultor,
       tipoCafeNombre: texto(row, 'Tipo de Café'),
-      estado: estadoRaw.startsWith('sec') ? 'seco' : 'humedo',
+      estado: estadoRaw.startsWith('pas') ? 'pasilla' : estadoRaw.startsWith('sec') ? 'seco' : 'humedo',
       kilos,
       precioPorKilo: numero(row, 'Precio/Kg'),
       costosAdicionales: numero(row, 'Costos Adicionales'),
@@ -88,7 +88,7 @@ export function exportarExcel(compras: Compra[], config: Configuracion): void {
     Fecha: formatFecha(c.fecha),
     Agricultor: c.agricultor,
     'Tipo de Café': getTipoCafe(c.tipoCafeId, config.tiposCafe),
-    Estado: c.estado === 'humedo' ? 'Húmedo' : 'Seco',
+    Estado: c.estado === 'humedo' ? 'Húmedo' : c.estado === 'pasilla' ? 'Pasilla' : 'Seco',
     'Kilos Comprados': c.kilos,
     'Precio/Kg': c.precioPorKilo,
     'Kilos Secos Est.': Number(kilosSecos(c.kilos, c.estado, config.porcentajePerdidaSecado).toFixed(2)),
@@ -139,7 +139,7 @@ export function exportarPDF(compras: Compra[], config: Configuracion): void {
       formatFecha(c.fecha),
       c.agricultor,
       getTipoCafe(c.tipoCafeId, config.tiposCafe),
-      c.estado === 'humedo' ? 'Húmedo' : 'Seco',
+      c.estado === 'humedo' ? 'Húmedo' : c.estado === 'pasilla' ? 'Pasilla' : 'Seco',
       `${formatNumero(c.kilos)} kg`,
       formatPeso(c.precioPorKilo),
       `${formatNumero(kilosSecos(c.kilos, c.estado, config.porcentajePerdidaSecado))} kg`,
