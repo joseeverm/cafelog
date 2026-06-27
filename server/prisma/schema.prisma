@@ -1,0 +1,85 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum EstadoCafe {
+  humedo
+  seco
+}
+
+enum EstadoLote {
+  abierto
+  vendido
+}
+
+model Usuario {
+  id            String         @id @default(cuid())
+  email         String         @unique
+  passwordHash  String
+  nombre        String
+  tiposCafe     TipoCafe[]
+  compras       Compra[]
+  lotes         Lote[]
+  configuracion Configuracion?
+  createdAt     DateTime       @default(now())
+  updatedAt     DateTime       @updatedAt
+}
+
+model TipoCafe {
+  id        String   @id
+  nombre    String
+  color     String
+  usuarioId String
+  usuario   Usuario  @relation(fields: [usuarioId], references: [id])
+  compras   Compra[]
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Compra {
+  id                String     @id
+  fecha             String
+  agricultor        String
+  tipoCafeId        String
+  tipoCafe          TipoCafe   @relation(fields: [tipoCafeId], references: [id])
+  estado            EstadoCafe
+  kilos             Float
+  precioPorKilo     Int
+  costosAdicionales Json       @default("[]")
+  notas             String     @default("")
+  loteId            String?
+  lote              Lote?      @relation(fields: [loteId], references: [id])
+  usuarioId         String
+  usuario           Usuario    @relation(fields: [usuarioId], references: [id])
+  createdAt         DateTime   @default(now())
+  updatedAt         DateTime   @updatedAt
+}
+
+model Lote {
+  id                 String     @id
+  nombre             String
+  fechaCreacion      String
+  precioVentaPorKilo Int?
+  estado             EstadoLote @default(abierto)
+  gastosAdicionales  Json       @default("[]")
+  compras            Compra[]
+  usuarioId          String
+  usuario            Usuario    @relation(fields: [usuarioId], references: [id])
+  createdAt          DateTime   @default(now())
+  updatedAt          DateTime   @updatedAt
+}
+
+model Configuracion {
+  id                      String   @id
+  porcentajePerdidaSecado Int      @default(50)
+  costosFrecuentes        Json     @default("[]")
+  usuarioId               String   @unique
+  usuario                 Usuario  @relation(fields: [usuarioId], references: [id])
+  createdAt               DateTime @default(now())
+  updatedAt               DateTime @updatedAt
+}

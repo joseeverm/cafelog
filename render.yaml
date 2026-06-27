@@ -1,0 +1,18 @@
+services:
+  - type: web
+    name: cafelog-api
+    runtime: node
+    rootDir: server
+    buildCommand: pnpm install && pnpm build
+    startCommand: node dist/index.js
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: DATABASE_URL
+        sync: false        # Se ingresa manualmente en el dashboard de Render
+      - key: JWT_SECRET
+        generateValue: true
+      - key: JWT_EXPIRES_IN
+        value: 30d
+      - key: CORS_ORIGIN
+        value: "*"         # Actualizar al dominio real del frontend después del primer deploy
