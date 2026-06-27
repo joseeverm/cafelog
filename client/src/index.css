@@ -1,0 +1,190 @@
+@import "tailwindcss";
+
+/* Class-based dark mode */
+@variant dark (&:where(.dark, .dark *));
+
+* { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  font-family: system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+#root { min-height: 100vh; }
+
+::-webkit-scrollbar { width: 6px; height: 6px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: #d4d4d8; border-radius: 9999px; }
+.dark ::-webkit-scrollbar-thumb { background: #3f3f46; }
+
+input[type='range'] { accent-color: #f59e0b; }
+
+
+/* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+   GTA VI THEME — Vice City Nights
+   Se aplica .dark + .gtavi en <html>.
+   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+
+.gtavi ::-webkit-scrollbar-thumb { background: #7209b7; }
+.gtavi input[type='range'] { accent-color: #f72585; }
+
+/* ── Fondos deep purple-black ── */
+.gtavi .dark\:bg-zinc-950 {
+  background-color: #08060f !important;
+  /* Resplandor cálido desde arriba — sunset de Vice City */
+  background-image: radial-gradient(ellipse at 60% -10%, rgba(247,37,133,0.13) 0%, rgba(114,9,183,0.06) 40%, transparent 70%) !important;
+}
+.gtavi .dark\:bg-zinc-900 { background-color: #0f0d1a !important; }
+.gtavi .dark\:bg-zinc-800 { background-color: #160d23 !important; }
+.gtavi .dark\:bg-zinc-800\/50 { background-color: rgba(22, 13, 35, 0.5) !important; }
+
+.gtavi .dark\:hover\:bg-zinc-800:hover    { background-color: rgba(247, 37, 133, 0.08) !important; }
+.gtavi .dark\:hover\:bg-zinc-800\/50:hover { background-color: rgba(247, 37, 133, 0.05) !important; }
+.gtavi .dark\:hover\:bg-zinc-700:hover    { background-color: rgba(247, 37, 133, 0.1) !important; }
+.gtavi .hover\:bg-zinc-100:hover          { background-color: rgba(247, 37, 133, 0.05) !important; }
+.gtavi .hover\:bg-white:hover             { background-color: rgba(247, 37, 133, 0.07) !important; }
+
+/* ── Bordes → pink/magenta glow ── */
+.gtavi .dark\:border-zinc-800 { border-color: rgba(247, 37, 133, 0.2) !important; }
+.gtavi .dark\:border-zinc-700 { border-color: rgba(247, 37, 133, 0.3) !important; }
+.gtavi .border-zinc-300       { border-color: rgba(247, 37, 133, 0.2) !important; }
+.gtavi .border-zinc-200       { border-color: rgba(247, 37, 133, 0.14) !important; }
+.gtavi .dark\:divide-zinc-800 > :not([hidden]) ~ :not([hidden]) { border-color: rgba(247, 37, 133, 0.13) !important; }
+.gtavi .divide-zinc-200 > :not([hidden]) ~ :not([hidden])       { border-color: rgba(247, 37, 133, 0.1) !important; }
+
+/* ── Amber → Hot Pink gradient ── */
+.gtavi .bg-amber-500,
+.gtavi .dark\:bg-amber-500 {
+  background: linear-gradient(135deg, #f72585 0%, #b5179e 55%, #7209b7 100%) !important;
+  color: #fff !important;
+  box-shadow: 0 0 20px rgba(247, 37, 133, 0.55), 0 0 5px rgba(247, 37, 133, 0.9) !important;
+  border-color: transparent !important;
+}
+.gtavi .hover\:bg-amber-400:hover,
+.gtavi .dark\:hover\:bg-amber-400:hover {
+  background: linear-gradient(135deg, #ff4da6 0%, #cc22a8 55%, #9020c0 100%) !important;
+  box-shadow: 0 0 28px rgba(247, 37, 133, 0.75), 0 0 8px rgba(247, 37, 133, 1) !important;
+}
+.gtavi .active\:bg-amber-600:active {
+  background: linear-gradient(135deg, #c9007a 0%, #8a0f8a 55%, #56087a 100%) !important;
+}
+
+/* Text amber → pink */
+.gtavi .text-amber-600,
+.gtavi .text-amber-700,
+.gtavi .text-amber-500,
+.gtavi .dark\:text-amber-400,
+.gtavi .dark\:text-amber-500 { color: #f72585 !important; }
+.gtavi .text-amber-800,
+.gtavi .dark\:text-amber-300 { color: #ff6bb5 !important; }
+.gtavi .hover\:text-amber-500:hover   { color: #ff6bb5 !important; }
+.gtavi .hover\:text-amber-400:hover   { color: #ff6bb5 !important; }
+.gtavi .dark\:hover\:text-amber-300:hover { color: #ffa0cc !important; }
+
+/* Borders amber → pink */
+.gtavi .border-amber-500,
+.gtavi .dark\:border-amber-500     { border-color: #f72585 !important; }
+.gtavi .border-amber-400           { border-color: #f72585 !important; }
+.gtavi .border-amber-300           { border-color: rgba(247, 37, 133, 0.65) !important; }
+.gtavi .border-amber-200           { border-color: rgba(247, 37, 133, 0.3) !important; }
+.gtavi .dark\:border-amber-500\/40 { border-color: rgba(247, 37, 133, 0.4) !important; }
+.gtavi .dark\:border-amber-500\/30 { border-color: rgba(247, 37, 133, 0.3) !important; }
+.gtavi .dark\:border-amber-500\/20 { border-color: rgba(247, 37, 133, 0.2) !important; }
+
+/* Backgrounds amber → pink */
+.gtavi .bg-amber-50,
+.gtavi .dark\:bg-amber-500\/10     { background-color: rgba(247, 37, 133, 0.09) !important; }
+.gtavi .dark\:bg-amber-500\/5      { background-color: rgba(247, 37, 133, 0.04) !important; }
+
+/* Focus rings */
+.gtavi .focus\:ring-amber-500:focus            { --tw-ring-color: #f72585 !important; }
+.gtavi .focus-visible\:ring-amber-500:focus-visible { --tw-ring-color: #f72585 !important; }
+.gtavi .dark\:focus-visible\:ring-offset-zinc-900:focus-visible { --tw-ring-offset-color: #0f0d1a !important; }
+
+/* ── Cards: glow magenta sutil ── */
+.gtavi .shadow-sm {
+  box-shadow: 0 0 0 1px rgba(247, 37, 133, 0.12), 0 0 18px rgba(247, 37, 133, 0.06) !important;
+}
+
+/* ── Texto secundario con tinte violeta ── */
+.gtavi .dark\:text-zinc-400 { color: #c4b3d9 !important; }
+.gtavi .dark\:text-zinc-500 { color: #9878b8 !important; }
+
+/* ── Emerald → teal eléctrico (mantiene semántica de ganancia) ── */
+.gtavi .dark\:text-emerald-400   { color: #06d6a0 !important; }
+.gtavi .dark\:bg-emerald-500\/10 { background-color: rgba(6, 214, 160, 0.08) !important; }
+.gtavi .dark\:border-emerald-500\/20 { border-color: rgba(6, 214, 160, 0.22) !important; }
+.gtavi .dark\:text-emerald-300   { color: #34eca4 !important; }
+
+/* ════════════════════════════════════════════
+   CAMBIOS DE UI PROPIOS DEL TEMA GTA VI
+   ════════════════════════════════════════════ */
+
+/* ── Franja de gradiente en cabeceras de página ── */
+.gtavi .page-header::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 2px;
+  background: linear-gradient(90deg, #f72585 0%, #7209b7 50%, #4cc9f0 100%);
+  z-index: 10;
+}
+
+/* ── Nav activo: glow + borde izquierdo magenta ── */
+.gtavi .bg-amber-50.text-amber-700 {
+  background: linear-gradient(90deg, rgba(247,37,133,0.14) 0%, rgba(114,9,183,0.05) 100%) !important;
+  border-left: 2px solid #f72585 !important;
+}
+
+/* ── Logo: texto en gradiente estilo Vice City ── */
+.gtavi .app-logo-text {
+  background: linear-gradient(90deg, #f72585 0%, #b5179e 45%, #7209b7 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  font-style: italic;
+  letter-spacing: -0.02em;
+}
+.gtavi .app-logo-sub {
+  color: rgba(247, 37, 133, 0.7) !important;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  font-size: 0.55rem;
+}
+
+/* ── Logo icon bg: gradiente magenta-morado ── */
+.gtavi .bg-amber-500.rounded-lg {
+  background: linear-gradient(135deg, #f72585, #7209b7) !important;
+  box-shadow: 0 0 14px rgba(247, 37, 133, 0.6) !important;
+}
+
+/* ── Headings H1: uppercase + tracking + gradiente suave ── */
+.gtavi h1 {
+  text-transform: uppercase !important;
+  letter-spacing: 0.07em !important;
+  font-weight: 800 !important;
+  background: linear-gradient(90deg, #fff 0%, #f0d4eb 60%, #e879f9 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+/* ── H2 (section headers): color magenta suave ── */
+.gtavi h2 {
+  color: #d4a0c8 !important;
+  letter-spacing: 0.03em;
+}
+
+/* ── Sidebar nav labels: mayúsculas compactas ── */
+.gtavi aside nav a span,
+.gtavi aside nav a {
+  letter-spacing: 0.04em;
+  font-size: 0.8rem !important;
+}
+
+/* ── Botón activo filtro semana ── */
+.gtavi .bg-amber-500.border-amber-500 {
+  box-shadow: 0 0 16px rgba(247, 37, 133, 0.6) !important;
+}
