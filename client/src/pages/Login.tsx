@@ -72,6 +72,7 @@ export default function Login() {
               <button
                 type="button"
                 onClick={() => setShowPassword(v => !v)}
+                onPointerDown={e => e.preventDefault()}
                 className="absolute right-3 top-1/2 -translate-y-1/2 text-zinc-400 hover:text-zinc-600 dark:hover:text-zinc-300 transition-colors"
                 tabIndex={-1}
               >
