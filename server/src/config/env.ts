@@ -6,7 +6,8 @@ const envSchema = z.object({
   DATABASE_URL: z.string(),
   JWT_SECRET: z.string().min(32),
   JWT_EXPIRES_IN: z.string().default('30d'),
-  CORS_ORIGIN: z.string().default('http://localhost:5173'),
+  // Acepta varios orígenes separados por coma (5173 = dev, 4173 = vite preview).
+  CORS_ORIGIN: z.string().default('http://localhost:5173,http://localhost:4173'),
 })
 
 const parsed = envSchema.safeParse(process.env)

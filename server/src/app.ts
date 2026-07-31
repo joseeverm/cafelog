@@ -12,7 +12,12 @@ export function createApp() {
   app.use(helmet())
   // CORS_ORIGIN=* permite cualquier origen (útil durante deploy inicial).
   // En producción cambiarlo al dominio exacto del frontend.
-  const corsOrigin = env.CORS_ORIGIN === '*' ? true : env.CORS_ORIGIN
+  const corsOrigin =
+    env.CORS_ORIGIN === '*'
+      ? true
+      : env.CORS_ORIGIN.split(',')
+          .map((origin) => origin.trim())
+          .filter(Boolean)
   app.use(cors({ origin: corsOrigin, credentials: true }))
   app.use(morgan(env.NODE_ENV === 'development' ? 'dev' : 'combined'))
   app.use(express.json())

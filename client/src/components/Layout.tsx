@@ -2,6 +2,7 @@ import { NavLink, Outlet } from 'react-router-dom'
 import { Coffee, LayoutDashboard, ShoppingCart, Boxes, History, Settings2 } from 'lucide-react'
 import type { LucideIcon } from 'lucide-react'
 import { useThemeCtx } from '../context/ThemeContext'
+import InstalarPWA from './InstalarPWA'
 
 const navItems: { to: string; label: string; labelMovil?: string; Icon: LucideIcon }[] = [
   { to: '/',               label: 'Inicio',      Icon: LayoutDashboard },
@@ -20,7 +21,7 @@ export default function Layout() {
     <div className="min-h-screen bg-zinc-100 dark:bg-zinc-950 flex flex-col transition-colors">
 
       {/* ── Sidebar desktop ── */}
-      <aside className="hidden md:flex fixed left-0 top-0 h-full w-60 flex-col z-40 bg-white dark:bg-zinc-900 border-r border-zinc-300 dark:border-zinc-800">
+      <aside className="app-sidebar hidden md:flex fixed left-0 top-0 h-full w-60 flex-col z-40 bg-white dark:bg-zinc-900 border-r border-zinc-300 dark:border-zinc-800">
         {/* Logo */}
         <div className="px-5 py-5 border-b border-zinc-200 dark:border-zinc-800">
           <div className="flex items-center gap-2.5">
@@ -68,12 +69,15 @@ export default function Layout() {
       </aside>
 
       {/* ── Contenido principal ── */}
-      <main className="md:ml-60 flex-1 flex flex-col pb-20 md:pb-0 min-h-screen">
+      <main className="contenido-movil md:ml-60 flex-1 flex flex-col md:pb-0 min-h-screen">
         <Outlet />
       </main>
 
+      {/* ── Banner / botón de instalación de la PWA ── */}
+      <InstalarPWA />
+
       {/* ── Bottom nav móvil ── */}
-      <nav className="md:hidden fixed bottom-0 left-0 right-0 z-40 bg-white dark:bg-zinc-900 border-t border-zinc-300 dark:border-zinc-800">
+      <nav className="nav-movil md:hidden fixed bottom-0 left-0 right-0 z-40 bg-white dark:bg-zinc-900 border-t border-zinc-300 dark:border-zinc-800">
         <div className="flex">
           {navItems.map(({ to, label, labelMovil, Icon }) => (
             <NavLink

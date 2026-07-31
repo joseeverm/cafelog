@@ -23,6 +23,36 @@ input[type='range'] { accent-color: #f59e0b; }
 
 
 /* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+   SAFE AREAS DE iOS (PWA instalada)
+   El index.html usa viewport-fit=cover + status bar translúcida, así que en
+   standalone el contenido llega hasta los bordes: hay que compensar el notch
+   y la barra de gestos. Fuera de @layer para ganarle a las utilidades de
+   Tailwind (py-4, bottom-20, …). En navegador env() vale 0 y no cambia nada.
+   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+
+/* Cabecera de página: baja bajo el notch */
+.page-header { padding-top: calc(1rem + env(safe-area-inset-top)); }
+
+/* Sidebar desktop/tablet: mismo criterio */
+.app-sidebar { padding-top: env(safe-area-inset-top); }
+
+/* Bottom nav móvil: crece para no quedar bajo la barra de gestos */
+.nav-movil { padding-bottom: env(safe-area-inset-bottom); }
+
+/* El contenido debe librar el bottom nav ya crecido */
+@media (max-width: 767px) {
+  .contenido-movil { padding-bottom: calc(5rem + env(safe-area-inset-bottom)); }
+  .fab-movil { bottom: calc(5rem + env(safe-area-inset-bottom)); }
+}
+
+/* Banner de instalación: justo encima del bottom nav */
+.pwa-banner { bottom: calc(5.25rem + env(safe-area-inset-bottom)); }
+@media (min-width: 768px) {
+  .pwa-banner { bottom: 1rem; }
+}
+
+
+/* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
    GTA VI THEME — Vice City Nights
    Se aplica .dark + .gtavi en <html>.
    ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */

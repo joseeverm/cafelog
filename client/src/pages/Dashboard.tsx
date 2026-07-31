@@ -193,7 +193,7 @@ export default function Dashboard() {
       {/* FAB móvil */}
       <button
         onClick={() => setModalAbierto(true)}
-        className="md:hidden fixed right-4 bottom-20 w-14 h-14 rounded-full bg-amber-500 hover:bg-amber-400 text-white shadow-lg flex items-center justify-center transition-colors z-30"
+        className="fab-movil md:hidden fixed right-4 bottom-20 w-14 h-14 rounded-full bg-amber-500 hover:bg-amber-400 text-white shadow-lg flex items-center justify-center transition-colors z-30"
       >
         <Plus className="w-6 h-6" />
       </button>
