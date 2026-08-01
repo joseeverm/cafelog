@@ -3,8 +3,26 @@ import react from '@vitejs/plugin-react'
 import tailwindcss from '@tailwindcss/vite'
 import { VitePWA } from 'vite-plugin-pwa'
 
+// El dev server proxea /api al backend, así el cliente puede usar rutas
+// relativas y la app funciona igual desde localhost o desde el celular
+// (`pnpm dev --host`), sin depender de la IP de la máquina ni de CORS.
+const apiProxy = {
+  '/api': {
+    target: 'http://localhost:3000',
+    changeOrigin: true,
+  },
+}
+
 export default defineConfig({
   base: '/',
+  server: {
+    host: true, // escucha en 0.0.0.0: accesible desde la LAN
+    proxy: apiProxy,
+  },
+  preview: {
+    host: true,
+    proxy: apiProxy,
+  },
   plugins: [
     react(),
     tailwindcss(),

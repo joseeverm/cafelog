@@ -1,6 +1,9 @@
 import type { Compra, Lote, Configuracion, TipoCafe, CostoAdicional, ResumenSemana } from '../types'
 
-const API_BASE = (import.meta.env.VITE_API_URL as string | undefined) ?? 'http://localhost:3000/api/v1'
+// Por defecto ruta relativa: en dev/preview el proxy de Vite la reenvía al
+// backend (ver vite.config.ts). En producción el frontend vive en otro dominio,
+// así que ahí se define VITE_API_URL con la URL absoluta de la API.
+const API_BASE = (import.meta.env.VITE_API_URL as string | undefined) ?? '/api/v1'
 
 function getToken(): string | null {
   return localStorage.getItem('cafelog_token')
