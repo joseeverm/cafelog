@@ -69,6 +69,8 @@ export default function Dashboard() {
         <div className="flex items-center gap-1 bg-zinc-100 dark:bg-zinc-800 rounded-lg p-1 w-fit">
           <button
             onClick={() => setSemana(semanaAnterior(semana))}
+            aria-label="Semana anterior"
+            title="Semana anterior"
             className="w-8 h-8 flex items-center justify-center rounded-md text-zinc-500 dark:text-zinc-400 hover:bg-white dark:hover:bg-zinc-700 hover:text-zinc-900 dark:hover:text-zinc-100 hover:shadow-sm transition-all"
           >
             <ChevronLeft className="w-4 h-4" />
@@ -83,7 +85,10 @@ export default function Dashboard() {
           </div>
           <button
             onClick={() => setSemana(semanaSiguiente(semana))}
-            className="w-8 h-8 flex items-center justify-center rounded-md text-zinc-500 dark:text-zinc-400 hover:bg-white dark:hover:bg-zinc-700 hover:text-zinc-900 dark:hover:text-zinc-100 hover:shadow-sm transition-all"
+            disabled={esActual}
+            aria-label="Semana siguiente"
+            title={esActual ? 'Ya estás en la semana actual' : 'Semana siguiente'}
+            className="w-8 h-8 flex items-center justify-center rounded-md text-zinc-500 dark:text-zinc-400 hover:bg-white dark:hover:bg-zinc-700 hover:text-zinc-900 dark:hover:text-zinc-100 hover:shadow-sm transition-all disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:bg-transparent dark:disabled:hover:bg-transparent disabled:hover:text-zinc-500 dark:disabled:hover:text-zinc-400 disabled:hover:shadow-none"
           >
             <ChevronRight className="w-4 h-4" />
           </button>

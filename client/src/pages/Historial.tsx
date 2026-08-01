@@ -3,7 +3,7 @@ import { FileSpreadsheet, FileText, Search, ChevronLeft, ChevronRight, X } from 
 import { useApp } from '../context/AppContext'
 import {
   kilosSecos, totalPagadoCompra, getSemanaActual,
-  semanaAnterior, semanaSiguiente, formatSemanaLabel, getSemanaISO,
+  semanaAnterior, semanaSiguiente, formatSemanaLabel, getSemanaISO, diaUTC,
 } from '../utils/calculos'
 import { formatPeso, formatNumero, formatFecha } from '../utils/formato'
 import { exportarExcel, exportarPDF } from '../utils/exportar'
@@ -31,7 +31,7 @@ export default function Historial() {
   const agricultores = useMemo(() => [...new Set(compras.map(c => c.agricultor))].sort(), [compras])
 
   const comprasFiltradas = useMemo(() => compras.filter(c => {
-    if (filtraSemana && getSemanaISO(new Date(c.fecha + 'T12:00:00')) !== filtraSemana) return false
+    if (filtraSemana && getSemanaISO(diaUTC(c.fecha)) !== filtraSemana) return false
     if (filtroTipo && c.tipoCafeId !== filtroTipo) return false
     if (filtroAgricultor && c.agricultor !== filtroAgricultor) return false
     if (filtroEstado && c.estado !== filtroEstado) return false
@@ -57,6 +57,8 @@ export default function Historial() {
   }
 
   const hayFiltros = filtraSemana || filtroTipo || filtroAgricultor || filtroEstado
+  // No tiene sentido navegar a semanas futuras: aún no hay compras que mostrar.
+  const esSemanaActual = selectorSemana === getSemanaActual()
 
   return (
     <div>
@@ -83,6 +85,8 @@ export default function Historial() {
         <div className="flex items-center gap-2 flex-wrap">
           <button
             onClick={() => setSelectorSemana(semanaAnterior(selectorSemana))}
+            aria-label="Semana anterior"
+            title="Semana anterior"
             className="w-7 h-7 flex items-center justify-center rounded-md text-zinc-400 dark:text-zinc-500 hover:bg-zinc-100 dark:hover:bg-zinc-800 hover:text-zinc-700 dark:hover:text-zinc-300 transition-colors"
           >
             <ChevronLeft className="w-4 h-4" />
@@ -99,7 +103,10 @@ export default function Historial() {
           </button>
           <button
             onClick={() => setSelectorSemana(semanaSiguiente(selectorSemana))}
-            className="w-7 h-7 flex items-center justify-center rounded-md text-zinc-400 dark:text-zinc-500 hover:bg-zinc-100 dark:hover:bg-zinc-800 hover:text-zinc-700 dark:hover:text-zinc-300 transition-colors"
+            disabled={esSemanaActual}
+            aria-label="Semana siguiente"
+            title={esSemanaActual ? 'Ya estás en la semana actual' : 'Semana siguiente'}
+            className="w-7 h-7 flex items-center justify-center rounded-md text-zinc-400 dark:text-zinc-500 hover:bg-zinc-100 dark:hover:bg-zinc-800 hover:text-zinc-700 dark:hover:text-zinc-300 transition-colors disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:bg-transparent dark:disabled:hover:bg-transparent disabled:hover:text-zinc-400 dark:disabled:hover:text-zinc-500"
           >
             <ChevronRight className="w-4 h-4" />
           </button>

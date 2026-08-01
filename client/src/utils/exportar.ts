@@ -2,7 +2,7 @@ import * as XLSX from 'xlsx'
 import jsPDF from 'jspdf'
 import autoTable from 'jspdf-autotable'
 import type { Compra, Configuracion, TipoCafe } from '../types'
-import { kilosSecos, totalPagadoCompra, getSemanaISO, resumenSemana } from './calculos'
+import { kilosSecos, totalPagadoCompra, getSemanaISO, resumenSemana, diaUTC } from './calculos'
 import { formatPeso, formatNumero, formatFecha } from './formato'
 
 export interface FilaExcel {
@@ -122,13 +122,13 @@ export function exportarPDF(compras: Compra[], config: Configuracion): void {
   doc.setTextColor(100, 100, 100)
   doc.text(`Generado: ${new Date().toLocaleDateString('es-CO')}`, 14, 23)
 
-  const semanas = [...new Set(compras.map(c => getSemanaISO(new Date(c.fecha + 'T12:00:00'))))].sort()
+  const semanas = [...new Set(compras.map(c => getSemanaISO(diaUTC(c.fecha))))].sort()
 
   let yPos = 32
 
   for (const semana of semanas) {
     const resumen = resumenSemana(compras, semana, config)
-    const comprasSemana = compras.filter(c => getSemanaISO(new Date(c.fecha + 'T12:00:00')) === semana)
+    const comprasSemana = compras.filter(c => getSemanaISO(diaUTC(c.fecha)) === semana)
 
     doc.setFontSize(12)
     doc.setTextColor(90, 50, 20)

@@ -33,8 +33,18 @@ export function gananciaLote(lote: Lote, todasLasCompras: Compra[], config: Conf
   return secos * lote.precioVentaPorKilo - invertido
 }
 
+// Convierte una fecha 'YYYY-MM-DD' al día calendario equivalente en UTC.
+export function diaUTC(fecha: string): Date {
+  return new Date(fecha + 'T00:00:00Z')
+}
+
+// Toda la aritmética de semanas vive en UTC. `fecha` debe ser un Date cuyo día
+// calendario UTC sea el que interesa (usar diaUTC para strings, o normalizar
+// como en getSemanaActual). Leer componentes locales de un Date construido en
+// UTC rompe el viaje de ida y vuelta semana → lunes → semana: en zonas con
+// offset negativo (p.ej. UTC-5) el lunes 00:00Z cae en el domingo local.
 export function getSemanaISO(fecha: Date): string {
-  const d = new Date(Date.UTC(fecha.getFullYear(), fecha.getMonth(), fecha.getDate()))
+  const d = new Date(Date.UTC(fecha.getUTCFullYear(), fecha.getUTCMonth(), fecha.getUTCDate()))
   const day = d.getUTCDay() || 7
   d.setUTCDate(d.getUTCDate() + 4 - day)
   const yearStart = new Date(Date.UTC(d.getUTCFullYear(), 0, 1))
@@ -43,7 +53,10 @@ export function getSemanaISO(fecha: Date): string {
 }
 
 export function getSemanaActual(): string {
-  return getSemanaISO(new Date())
+  // El día de hoy es el local, pero se evalúa como día UTC para que coincida
+  // con el resto de la aritmética de semanas.
+  const hoy = new Date()
+  return getSemanaISO(new Date(Date.UTC(hoy.getFullYear(), hoy.getMonth(), hoy.getDate())))
 }
 
 export function getLunesDeSemana(semana: string): Date {
@@ -55,7 +68,7 @@ export function getLunesDeSemana(semana: string): Date {
 }
 
 export function resumenSemana(compras: Compra[], semana: string, config: Configuracion): ResumenSemana {
-  const comprasSemana = compras.filter(c => getSemanaISO(new Date(c.fecha + 'T12:00:00')) === semana)
+  const comprasSemana = compras.filter(c => getSemanaISO(diaUTC(c.fecha)) === semana)
   return {
     semana,
     totalKilosComprados: comprasSemana.reduce((s, c) => s + c.kilos, 0),
